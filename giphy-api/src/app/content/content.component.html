@@ -1,1 +1,10 @@
-<p>content works!</p>
+<div class="gifs">
+    <div class="gif" *ngFor="let gif of gifs">
+        <img [src]="gif.images.downsized.url" [alt]="gif.id"/>
+    </div>
+</div>
+
+<mat-paginator [length]="totalCount"
+    [pageSize]="pageSize"
+    (page)="changePage($event)">
+</mat-paginator>    
