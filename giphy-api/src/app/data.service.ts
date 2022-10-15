@@ -13,12 +13,15 @@ export interface gifsData {
   providedIn: 'root'
 })
 export class DataService {
+  isSearched: boolean = false;
+  searchTerm: string = '';
+  offset: number = 0;
   gifs = new BehaviorSubject<gifsData>({data: [], total:0, offset:0, pageSize:0});
 
   constructor(private httpClient: HttpClient) { }
 
   getInitialData() {
-    return this.httpClient.get(`https://api.giphy.com/v1/gifs/trending?api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
+    return this.httpClient.get(`https://api.giphy.com/v1/gifs/trending?offset=${this.offset}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
     .subscribe((response : any) => {
       this.gifs.next({ 
         data: response.data, 
@@ -29,7 +32,9 @@ export class DataService {
   }
 
   searchGif(term: string) {
-    return this.httpClient.get(`https://api.giphy.com/v1/gifs/search?q=${term}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
+    this.searchTerm = term;
+    this.isSearched = true;
+    return this.httpClient.get(`https://api.giphy.com/v1/gifs/search?q=${term}&offset=${this.offset}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
     .subscribe((response : any) => {
       this.gifs.next({ 
         data: response.data, 
@@ -37,6 +42,14 @@ export class DataService {
         offset: response.pagination.offset,
         pageSize: environment.gifsPageSize  });
     });
+  }
+
+  getData(offset: number){
+    this.offset = offset;
+    if(this.isSearched) {
+      return this.searchGif(this.searchTerm);
+    }
+    return this.getInitialData()
   }
 
   getGifs() {

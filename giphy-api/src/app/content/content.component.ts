@@ -25,7 +25,6 @@ export class ContentComponent implements OnInit, OnDestroy {
     this.dataService.getInitialData();
     this.subscripton = this.dataService.getGifs()
       .subscribe((response: any) => {
-        console.log('content', response)
         this.totalCount = response.total;
         this.offset = response.offset;
         this.gifs = response.data;
@@ -34,7 +33,7 @@ export class ContentComponent implements OnInit, OnDestroy {
   }
 
   changePage(e: any) {
-    console.log(e);
+    this.dataService.getData(e.pageIndex * this.pageSize);
   }
 
 }
