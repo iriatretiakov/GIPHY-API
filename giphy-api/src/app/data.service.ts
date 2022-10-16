@@ -13,15 +13,16 @@ export interface gifsData {
   providedIn: 'root'
 })
 export class DataService {
-  isSearched: boolean = false;
-  searchTerm: string = '';
-  offset: number = 0;
+  private isSearched: boolean = false;
+  private searchTerm: string = '';
+  private offset: number = 0;
+  private baseUrl: string = 'https://api.giphy.com/v1/gifs/';
   gifs = new BehaviorSubject<gifsData>({data: [], total:0, offset:0, pageSize:0});
 
   constructor(private httpClient: HttpClient) { }
 
   getInitialData() {
-    return this.httpClient.get(`https://api.giphy.com/v1/gifs/trending?offset=${this.offset}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
+    return this.httpClient.get(`${this.baseUrl}trending?offset=${this.offset}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
     .subscribe((response : any) => {
       this.gifs.next({ 
         data: response.data, 
@@ -34,7 +35,7 @@ export class DataService {
   searchGif(term: string) {
     this.searchTerm = term;
     this.isSearched = true;
-    return this.httpClient.get(`https://api.giphy.com/v1/gifs/search?q=${term}&offset=${this.offset}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
+    return this.httpClient.get(`${this.baseUrl}search?q=${term}&offset=${this.offset}&api_key=${environment.giphyApiKey}&limit=${environment.gifsPageSize}`)
     .subscribe((response : any) => {
       this.gifs.next({ 
         data: response.data, 
@@ -46,7 +47,7 @@ export class DataService {
 
   getData(offset: number){
     this.offset = offset;
-    if(this.isSearched) {
+    if(this.isSearched) { //may be user shouldn't pagination through trending gifs
       return this.searchGif(this.searchTerm);
     }
     return this.getInitialData()
