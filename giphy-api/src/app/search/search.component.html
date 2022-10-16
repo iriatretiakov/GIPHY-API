@@ -1,3 +1,6 @@
 <div class="search-bar">
-    <input #gif placeholder="search something" (keyup.enter)="search(gif.value)"/>
+    <mat-form-field appearance="fill">
+        <mat-label>Search some GIFs</mat-label>
+        <input matInput #gif (keyup.enter)="search(gif.value)" />
+    </mat-form-field>
 </div>
